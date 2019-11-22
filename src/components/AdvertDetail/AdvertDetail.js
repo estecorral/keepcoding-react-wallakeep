@@ -22,12 +22,11 @@ import './AdvertDetail.css';
  * Main App
  */
 export default class AdvertDetail extends Component {
-  
   /**
    * Utilizar el contexto en cualquier metodo del ciclo de vida del component
    */
   static contextType = UserConsumer;
-  
+
   /**
    * Constructor
    */
@@ -35,32 +34,27 @@ export default class AdvertDetail extends Component {
     super(props);
     this.state = {
       loading: true,
-      advert: null
-    }
+      advert: null,
+    };
   }
-  
+
   /**
    * Component did mount
    */
   componentDidMount() {
     // Chequeo sesion del contexto, si no existe redirijo a register
-    const session = this.context.session
-    if (!session.name) {
-      return this.props.history.push('/register');
-    } 
+    const session = this.context.session;
     // Call API to get advert detail
     const id = this.props.match.params.id;
     const { getAdvert } = NodepopAPI(session.apiUrl);
-    getAdvert(id)
-      .then( res => {
-        this.setState({
-          advert: res,
-          loading: false
-        });
-      })
+    getAdvert(id).then(res => {
+      this.setState({
+        advert: res,
+        loading: false,
+      });
+    });
   }
 
-  
   /**
    * Render
    */
@@ -68,67 +62,89 @@ export default class AdvertDetail extends Component {
     return (
       <React.Fragment>
         <header>
-          <NavBar/>
+          <NavBar />
         </header>
         <Container>
-          <main className='Main__Section'>
-            <div className='Section__Title'>
+          <main className="Main__Section">
+            <div className="Section__Title">
               <h2>Detalle del anuncio</h2>
             </div>
-            { !this.state.loading && 
-              <article className='AdvertDetail'>
-                <div className='AdvertDetail__Main'>
-                  <header className='AdvertDetail__Header'>
-                    <Link to='/' className='AdvertDetail__Back'>
-                      <KeyboardBackspaceIcon/>
+            {!this.state.loading && (
+              <article className="AdvertDetail">
+                <div className="AdvertDetail__Main">
+                  <header className="AdvertDetail__Header">
+                    <Link to="/" className="AdvertDetail__Back">
+                      <KeyboardBackspaceIcon />
                     </Link>
                     <h1>{this.state.advert.name}</h1>
-                    <img className='Caption' src={this.state.advert.photo} alt='caption'/>
+                    <img
+                      className="Caption"
+                      src={this.state.advert.photo}
+                      alt="caption"
+                    />
                   </header>
-                  <div className='AdvertDetail__Content'>
-                    <h3 className='AdvertDetail__Type'>{this.state.advert.type==='buy'?'Compro':'Vendo'}</h3>
-                    <div className='AdvertDetail__Description'>
+                  <div className="AdvertDetail__Content">
+                    <h3 className="AdvertDetail__Type">
+                      {this.state.advert.type === 'buy' ? 'Compro' : 'Vendo'}
+                    </h3>
+                    <div className="AdvertDetail__Description">
                       <p>{this.state.advert.description}</p>
                     </div>
-                    <div className='AdvertDetail__Tags'>
-                    {   this.state.advert.tags && 
-                        this.state.advert.tags.map((value,i) => {
-                            return  <Chip
-                                        key={i}
-                                        size="small"
-                                        label={value}
-                                        className={`Ad__Tag Ad__Tag--${value}`}
-                                    />
-                        })
-                    }
+                    <div className="AdvertDetail__Tags">
+                      {this.state.advert.tags &&
+                        this.state.advert.tags.map((value, i) => {
+                          return (
+                            <Chip
+                              key={i}
+                              size="small"
+                              label={value}
+                              className={`Ad__Tag Ad__Tag--${value}`}
+                            />
+                          );
+                        })}
                     </div>
-                    <div className='AdvertDetail__Actions'>
+                    <div className="AdvertDetail__Actions">
                       <Link to={`/advert/edit/${this.state.advert._id}`}>
-                        <Button type='button' variant='contained' color='secondary' startIcon={<EditIcon />} onClick={this.handleReset} className='ButtonWallakeep ButtonWallakeep__Green'>Editar</Button>
+                        <Button
+                          type="button"
+                          variant="contained"
+                          color="secondary"
+                          startIcon={<EditIcon />}
+                          onClick={this.handleReset}
+                          className="ButtonWallakeep ButtonWallakeep__Green"
+                        >
+                          Editar
+                        </Button>
                       </Link>
                     </div>
-                    
                   </div>
                 </div>
-                <div className='AdvertDetail__Footer'>
-                  <div className='AdvertDetail__Price'>
-                    <p className='Text'>Precio</p>
-                    <p className='Price'>{this.state.advert.price} <span>€</span></p>
+                <div className="AdvertDetail__Footer">
+                  <div className="AdvertDetail__Price">
+                    <p className="Text">Precio</p>
+                    <p className="Price">
+                      {this.state.advert.price} <span>€</span>
+                    </p>
                   </div>
-                  <Moment className='AdvertDetail__Date' fromNow>{this.state.advert.createdAt}</Moment>
+                  <Moment className="AdvertDetail__Date" fromNow>
+                    {this.state.advert.createdAt}
+                  </Moment>
                 </div>
               </article>
-            }
-            {
-              this.state.loading &&
-              <div className='Home__Loading'>
-                <img src={imageSpinner} className='Home__Spinner' alt='spinner'/>
+            )}
+            {this.state.loading && (
+              <div className="Home__Loading">
+                <img
+                  src={imageSpinner}
+                  className="Home__Spinner"
+                  alt="spinner"
+                />
                 <h2>Fetching data from API</h2>
               </div>
-            }
+            )}
           </main>
         </Container>
-        <Footer/>
+        <Footer />
       </React.Fragment>
     );
   }

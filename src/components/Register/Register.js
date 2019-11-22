@@ -28,10 +28,10 @@ import './Register.css';
  * Register Form
  */
 class Register extends Component {
-  
   /**
-   * Uso del contexto en el cualquier metodo del componente 
-   */ 
+   * Uso del contexto en el cualquier metodo del componente
+   */
+
   static contextType = UserConsumer;
 
   /**
@@ -46,30 +46,34 @@ class Register extends Component {
       surname: '',
       tag: '',
       tags: null,
-      apiUrl: ''
-    }
+      apiUrl: '',
+    };
   }
 
   /**
    * Render
    */
-  render() {   
+  render() {
     return (
-      <div className='Register'>
-        <div className='Register__Wrapper'>
-          <form className='Register__Form' onSubmit={this.handleOnSubmit}>
-            <img src={imageLogo} className='Register__Logo' alt='nodepop-logo' />
+      <div className="Register">
+        <div className="Register__Wrapper">
+          <form className="Register__Form" onSubmit={this.handleOnSubmit}>
+            <img
+              src={imageLogo}
+              className="Register__Logo"
+              alt="nodepop-logo"
+            />
             <FormControl>
               <Input
-                name='name'
+                name="name"
                 value={this.state.name || ''}
                 onChange={this.handleInput('name')}
-                type='text' 
-                placeholder='type your name'
-                autoComplete='username'
+                type="text"
+                placeholder="type your name"
+                autoComplete="username"
                 startAdornment={
-                  <InputAdornment position='start' className='InputIcon__Icon'>
-                    <AccountCircleIcon/>
+                  <InputAdornment position="start" className="InputIcon__Icon">
+                    <AccountCircleIcon />
                   </InputAdornment>
                 }
                 endAdornment={this.props.endAdornment}
@@ -78,14 +82,14 @@ class Register extends Component {
             </FormControl>
             <FormControl>
               <Input
-                name='surname'
+                name="surname"
                 value={this.state.surname || ''}
                 onChange={this.handleInput('surname')}
-                type='text' 
-                placeholder='type your surname'
+                type="text"
+                placeholder="type your surname"
                 startAdornment={
-                  <InputAdornment position='start' className='InputIcon__Icon'>
-                    <AccountCircleIcon/>
+                  <InputAdornment position="start" className="InputIcon__Icon">
+                    <AccountCircleIcon />
                   </InputAdornment>
                 }
                 endAdornment={this.props.endAdornment}
@@ -96,52 +100,73 @@ class Register extends Component {
               <Select
                 value={this.state.tag || ''}
                 onChange={this.handleInput('tag')}
-                name='tag'
+                name="tag"
                 displayEmpty
                 required
               >
-                <MenuItem value='' disabled>Filter by tag</MenuItem>
-                {
-                  this.state.tags && 
-                  this.state.tags.map((value) => {
-                    return  <MenuItem key={value} value={value}>
-                              <Chip size='small'
-                                    label={value}
-                                    className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
-                              />
-                            </MenuItem>
-                  })
-                }
+                <MenuItem value="" disabled>
+                  Filter by tag
+                </MenuItem>
+                {this.state.tags &&
+                  this.state.tags.map(value => {
+                    return (
+                      <MenuItem key={value} value={value}>
+                        <Chip
+                          size="small"
+                          label={value}
+                          className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
+                        />
+                      </MenuItem>
+                    );
+                  })}
               </Select>
-              <FormHelperText>Select a tag as the initial filter</FormHelperText>
+              <FormHelperText>
+                Select a tag as the initial filter
+              </FormHelperText>
             </FormControl>
-            <div className='Register__API'>
+            <div className="Register__API">
               <FormControl fullWidth>
                 <Input
-                  name='apiUrl'
+                  name="apiUrl"
                   value={this.state.apiUrl || ''}
                   onChange={this.handleInput('apiUrl')}
-                  type='text' 
+                  type="text"
                   required
                 />
-                <FormHelperText>URL y puerto donde conectar a Nodepop</FormHelperText>
-              </FormControl>  
-              <Button className='button' type='submit' variant='contained' color='primary' onClick={this.handleReconnect}> 
-                <RefreshIcon/> Test API
+                <FormHelperText>
+                  URL y puerto donde conectar a Nodepop
+                </FormHelperText>
+              </FormControl>
+              <Button
+                className="button"
+                type="submit"
+                variant="contained"
+                color="primary"
+                onClick={this.handleReconnect}
+              >
+                <RefreshIcon /> Test API
               </Button>
             </div>
             <FormControlLabel
-              name='isRemember'
-              label='remember me'
+              name="isRemember"
+              label="remember me"
               control={
                 <Checkbox
-                    color='primary'
-                    checked={this.state.isRemember}
-                    onChange={this.handleCheckbox('isRemember')}
+                  color="primary"
+                  checked={this.state.isRemember}
+                  onChange={this.handleCheckbox('isRemember')}
                 />
               }
             />
-            <Button className='button' type='submit' variant='contained' color='primary'> Login </Button>
+            <Button
+              className="button"
+              type="submit"
+              variant="contained"
+              color="primary"
+            >
+              {' '}
+              Login{' '}
+            </Button>
           </form>
         </div>
       </div>
@@ -154,44 +179,54 @@ class Register extends Component {
   componentDidMount() {
     // Restaurar datos de sesion del contexto
     const session = this.context.session;
-    this.setState({
-      name: session.name,
-      surname: session.surname,
-      apiUrl: session.apiUrl
-    }, () => {
-      // Recuperar tags de la API
-      const { getTags } = NodepopAPI(session.apiUrl);
-      getTags()
-      .then(res => {
-        // Conectado OK a la API
-        this.props.enqueueSnackbar('Conectado con éxito a la API', { variant: 'success', });
-        this.setState({
-          error: false,
-          tags: res,
-          tag: session.tag,
-        });
-      })
-      .catch(() => {
-        this.props.enqueueSnackbar('Error conectando con la API. Revise la URL.', { variant: 'error', });
-        this.setState({
-          error: true,
-        });
-      });
-    });  
+    this.setState(
+      {
+        name: session.name,
+        surname: session.surname,
+        apiUrl: session.apiUrl,
+      },
+      () => {
+        // Recuperar tags de la API
+        const { getTags } = NodepopAPI(session.apiUrl);
+        getTags()
+          .then(res => {
+            // Conectado OK a la API
+            this.props.enqueueSnackbar('Conectado con éxito a la API', {
+              variant: 'success',
+            });
+            this.setState({
+              error: false,
+              tags: res,
+              tag: session.tag,
+            });
+          })
+          .catch(() => {
+            this.props.enqueueSnackbar(
+              'Error conectando con la API. Revise la URL.',
+              { variant: 'error' },
+            );
+            this.setState({
+              error: true,
+            });
+          });
+      },
+    );
   }
 
   /**
    * Handle onSubmit event
    */
-  handleOnSubmit = async (event) => {
+  handleOnSubmit = async event => {
     event.preventDefault();
     // Sólo si no hay errores de conexión
     if (!this.state.error) {
       // Campos relevantes para generar el objeto sesión
-      const { name, surname, tag, apiUrl } = {...this.state};
+      const { name, surname, tag, apiUrl } = { ...this.state };
       // Son todos obligatorios, en caso de no estar no permito continuar
       if (!name || !surname || !tag || !apiUrl) {
-        this.props.enqueueSnackbar('Rellene todos los campos del formulario', { variant: 'error', });
+        this.props.enqueueSnackbar('Rellene todos los campos del formulario', {
+          variant: 'error',
+        });
         return;
       }
       // Compruebo que la API indicada es buena
@@ -200,7 +235,13 @@ class Register extends Component {
         const res = await getTags();
         if (res) {
           // Genero sesión y la guardo en LS si ha seleccionado "remember"
-          const session = new Session (name, surname, tag, apiUrl, this.context.session.maxAdverts);
+          const session = new Session(
+            name,
+            surname,
+            tag,
+            apiUrl,
+            this.context.session.maxAdverts,
+          );
           if (this.state.isRemember) {
             LocalStorage.saveLocalStorage(session);
           }
@@ -209,30 +250,36 @@ class Register extends Component {
           this.props.history.push('/');
         }
       } catch (error) {
-        this.props.enqueueSnackbar('Error conectando con la API. Revise la URL.', { variant: 'error', });        
+        this.props.enqueueSnackbar(
+          'Error conectando con la API. Revise la URL.',
+          { variant: 'error' },
+        );
       }
     } else {
-      this.props.enqueueSnackbar('Error conectando con la API. Revise la URL.', { variant: 'error', });
+      this.props.enqueueSnackbar(
+        'Error conectando con la API. Revise la URL.',
+        { variant: 'error' },
+      );
     }
-  }
+  };
 
   /**
    * Cambio en un input tipo check
    */
-  handleCheckbox = (field) => (event) => {
+  handleCheckbox = field => event => {
     this.setState({
-      [field]: event.target.checked
+      [field]: event.target.checked,
     });
   };
 
   /**
    * Cambio en un input tipo texto
    */
-  handleInput = (field) => (event) => {
+  handleInput = field => event => {
     this.setState({
-      [field]: event.target.value 
+      [field]: event.target.value,
     });
-  }
+  };
 
   /**
    * Reconecta a una API si se cambia la URL
@@ -241,21 +288,26 @@ class Register extends Component {
     // Recuperar tags de la API
     const { getTags } = NodepopAPI(this.state.apiUrl);
     getTags()
-    .then(res => {
-      // Conectado OK a la API
-      this.props.enqueueSnackbar('Conectado con éxito a la API', { variant: 'success', });
-      this.setState({
-        error: false,
-        tags: res,
+      .then(res => {
+        // Conectado OK a la API
+        this.props.enqueueSnackbar('Conectado con éxito a la API', {
+          variant: 'success',
+        });
+        this.setState({
+          error: false,
+          tags: res,
+        });
+      })
+      .catch(() => {
+        this.props.enqueueSnackbar(
+          'Error conectando con la API. Revise la URL.',
+          { variant: 'error' },
+        );
+        this.setState({
+          error: true,
+        });
       });
-    })
-    .catch(() => {
-      this.props.enqueueSnackbar('Error conectando con la API. Revise la URL.', { variant: 'error', });
-      this.setState({
-        error: true,
-      });
-    });
-  }
+  };
 }
 
 export default withSnackbar(Register);

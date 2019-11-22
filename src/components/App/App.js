@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 /* Material UI */
 /* Own modules */
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
+import PrivateRoute from '../PrivateRoute/PrivateRoute';
 import { UserProvider } from '../../context/UserContext';
 import AdvertDetail from '../AdvertDetail/AdvertDetail';
 import AdvertEdit from '../AdvertEdit/AdvertEdit';
@@ -20,10 +21,9 @@ import Session from '../../models/Session';
  * Main App
  */
 export default class App extends Component {
-  
   /**
    * Constructor
-   * @param {*} props 
+   * @param {*} props
    */
   constructor(props) {
     super(props);
@@ -31,31 +31,43 @@ export default class App extends Component {
     let user = LocalStorage.readLocalStorage();
     if (!user) {
       // Si no hay nada en el local storage, creo un objeto sesión vacio correcto
-      user = new Session ();
+      user = new Session();
     }
     this.state = {
-      session: user
-    }
+      session: user,
+    };
   }
 
   /**
    * Render
    */
-  render() {   
+  render() {
     return (
       <ErrorBoundary>
         <UserProvider value={this.state}>
-            <Router>
-              <Switch>
-                  <Route path='/register' exact component={Register} />
-                  <Route path='/profile' exact component={Profile} />
-                  <Route path='/advert/display/:id' exact component={AdvertDetail} />
-                  <Route path='/advert/create' exact render={(props) => <AdvertEdit {...props} mode='create'/>}/>
-                  <Route path='/advert/edit/:id' exact render={(props) => <AdvertEdit {...props} mode='edit'/>}/>
-                  <Route path='/' exact component={Home} />
-                  <Route component={Error404} />
-              </Switch>
-            </Router>
+          <Router>
+            <Switch>
+              <Route path="/register" exact component={Register} />
+              <PrivateRoute path="/profile" exact component={Profile} />
+              <PrivateRoute
+                path="/advert/display/:id"
+                exact
+                component={AdvertDetail}
+              />
+              <PrivateRoute
+                path="/advert/create"
+                exact
+                render={props => <AdvertEdit {...props} mode="create" />}
+              />
+              <PrivateRoute
+                path="/advert/edit/:id"
+                exact
+                render={props => <AdvertEdit {...props} mode="edit" />}
+              />
+              <PrivateRoute path="/" exact component={Home} />
+              <PrivateRoute component={Error404} />
+            </Switch>
+          </Router>
         </UserProvider>
       </ErrorBoundary>
     );

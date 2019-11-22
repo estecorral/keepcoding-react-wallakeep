@@ -27,7 +27,7 @@ import Footer from '../Footer/Footer';
 import NodepopAPI from '../../services/NodepopAPI';
 import UserConsumer from '../../context/UserContext';
 /* Assets */
-import imagePhoto from '../../assets/images/photo.png'
+import imagePhoto from '../../assets/images/photo.png';
 /* CSS */
 import './AdvertEdit.css';
 import Advert from '../../models/Advert';
@@ -36,7 +36,6 @@ import Advert from '../../models/Advert';
  * Main App
  */
 class AdvertEdit extends Component {
-
   /**
    * Utilizar el contexto en cualquier metodo del ciclo de vida del component
    */
@@ -46,7 +45,7 @@ class AdvertEdit extends Component {
    * Constructor
    */
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       photoTemp: '',
       openModal: false,
@@ -56,10 +55,10 @@ class AdvertEdit extends Component {
         type: '',
         tags: [],
         price: 0,
-        description: '', 
+        description: '',
         photo: '',
-      }
-    }
+      },
+    };
   }
 
   /**
@@ -67,25 +66,21 @@ class AdvertEdit extends Component {
    */
   componentDidMount() {
     // Chequeo sesion del contexto, si no existe redirijo a register
-    const session = this.context.session
-    if (!session.name) {
-      return this.props.history.push('/register');
-    } 
+    const session = this.context.session;
     // Obtengo los tags y los paso al estado para que re-renderice el panel de busquedas
     const { getTags, getAdvert } = NodepopAPI(session.apiUrl);
     getTags().then(res => {
-      this.setState({tags: res})
+      this.setState({ tags: res });
     });
     // En caso de ser una modificación cargo el anuncio a editar
     if (this.props.mode === 'edit' && this.props.match.params) {
       const id = this.props.match.params.id;
-      getAdvert(id)
-        .then( res => {
-          this.setState({
-            advert: res,
-            loading: false
-          });
-        }) 
+      getAdvert(id).then(res => {
+        this.setState({
+          advert: res,
+          loading: false,
+        });
+      });
     }
   }
 
@@ -96,133 +91,200 @@ class AdvertEdit extends Component {
     return (
       <React.Fragment>
         <header>
-          <NavBar/>
+          <NavBar />
         </header>
         <Container>
-          <main className='Main__Section'>
-            <div className='Section__Title'>
-              <h2>{this.props.mode === 'edit' ? 'Editar anuncio' : 'Crear nuevo anuncio' }</h2>
+          <main className="Main__Section">
+            <div className="Section__Title">
+              <h2>
+                {this.props.mode === 'edit'
+                  ? 'Editar anuncio'
+                  : 'Crear nuevo anuncio'}
+              </h2>
             </div>
-            <form onSubmit={this.handleSubmit} noValidate autoComplete='off' className='AdvertEdit__Form'>
-              <button type='button' className='AdvertEdit_Picture' onClick={this.handleSwitchOpen}>
-                <img src={this.state.advert.photo || imagePhoto} alt='dummy_photo'/>
+            <form
+              onSubmit={this.handleSubmit}
+              noValidate
+              autoComplete="off"
+              className="AdvertEdit__Form"
+            >
+              <button
+                type="button"
+                className="AdvertEdit_Picture"
+                onClick={this.handleSwitchOpen}
+              >
+                <img
+                  src={this.state.advert.photo || imagePhoto}
+                  alt="dummy_photo"
+                />
               </button>
-              <FormControl fullWidth className='AdvertEdit__FormControl'>
-                <InputLabel shrink htmlFor='type'>Nombre</InputLabel>
+              <FormControl fullWidth className="AdvertEdit__FormControl">
+                <InputLabel shrink htmlFor="type">
+                  Nombre
+                </InputLabel>
                 <Input
-                  name='name'
+                  name="name"
                   value={this.state.advert.name}
                   onChange={this.handleChange('name')}
-                  type='text' 
+                  type="text"
                   required
                 />
               </FormControl>
-              <FormControl fullWidth className='AdvertEdit__FormControl'>
-                <InputLabel shrink htmlFor='type'>Tipo</InputLabel>
+              <FormControl fullWidth className="AdvertEdit__FormControl">
+                <InputLabel shrink htmlFor="type">
+                  Tipo
+                </InputLabel>
                 <Select
-                  name= 'type'
+                  name="type"
                   onChange={this.handleChange('type')}
-                  className='SearchPanel__Type'
+                  className="SearchPanel__Type"
                   value={this.state.advert.type}
                   displayEmpty
                 >
-                  <MenuItem key='buy' value='buy'><Chip size='small' label='buy' className='Ad__Tag Ad__Tag--small Ad__Tag--buy'/></MenuItem>
-                  <MenuItem key='sell' value='sell'><Chip size='small' label='sell' className='Ad__Tag Ad__Tag--small Ad__Tag--sell'/></MenuItem>                  
+                  <MenuItem key="buy" value="buy">
+                    <Chip
+                      size="small"
+                      label="buy"
+                      className="Ad__Tag Ad__Tag--small Ad__Tag--buy"
+                    />
+                  </MenuItem>
+                  <MenuItem key="sell" value="sell">
+                    <Chip
+                      size="small"
+                      label="sell"
+                      className="Ad__Tag Ad__Tag--small Ad__Tag--sell"
+                    />
+                  </MenuItem>
                 </Select>
               </FormControl>
-              <FormControl fullWidth className='AdvertEdit__FormControl'>
-                <InputLabel shrink htmlFor='tags'>Tags</InputLabel>
+              <FormControl fullWidth className="AdvertEdit__FormControl">
+                <InputLabel shrink htmlFor="tags">
+                  Tags
+                </InputLabel>
                 <Select
                   multiple
-                  name='tags'
+                  name="tags"
                   value={this.state.advert.tags || ''}
                   onChange={this.handleChangeMultiple}
-                  renderValue={() =>
-                      <div> 
-                        { this.state.advert.tags.map(value => 
-                            <Chip key={value} size='small' label={value} className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}/> 
-                        )}
-                      </div>
-                  }
+                  renderValue={() => (
+                    <div>
+                      {this.state.advert.tags.map(value => (
+                        <Chip
+                          key={value}
+                          size="small"
+                          label={value}
+                          className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 >
-                  {
-                    this.state.tags && 
+                  {this.state.tags &&
                     this.state.tags.map((value, key) => {
-                      return  <MenuItem key={key} value={value}>
-                                <Chip key={key}
-                                      size='small'
-                                      label={value}
-                                      className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
-                                />
-                              </MenuItem>
-                    })
-                  }
+                      return (
+                        <MenuItem key={key} value={value}>
+                          <Chip
+                            key={key}
+                            size="small"
+                            label={value}
+                            className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
+                          />
+                        </MenuItem>
+                      );
+                    })}
                 </Select>
               </FormControl>
-              <FormControl fullWidth className='AdvertEdit__FormControl'>
-                <InputLabel htmlFor='price'>Price</InputLabel>
+              <FormControl fullWidth className="AdvertEdit__FormControl">
+                <InputLabel htmlFor="price">Price</InputLabel>
                 <Input
-                  name='price'
-                  type='number'
+                  name="price"
+                  type="number"
                   value={this.state.advert.price}
                   onChange={this.handleChangeNumber('price')}
-                  endAdornment={<InputAdornment position='start'>€</InputAdornment>}
+                  endAdornment={
+                    <InputAdornment position="start">€</InputAdornment>
+                  }
                 />
               </FormControl>
-              <FormControl fullWidth className='AdvertEdit__FormControl'>
+              <FormControl fullWidth className="AdvertEdit__FormControl">
                 <TextField
-                  name='description'
-                  label='Descripción'
+                  name="description"
+                  label="Descripción"
                   value={this.state.advert.description}
                   onChange={this.handleChange('description')}
                   multiline
                   rows={2}
-                  helperText='Introduce una descripción para el anuncio'
+                  helperText="Introduce una descripción para el anuncio"
                   InputLabelProps={{
                     shrink: true,
                   }}
                 />
-              </FormControl> 
-              <div className='AdvertEdit__Footer'>
-                <Button type='submit' variant='contained' startIcon={<SaveIcon />} className='ButtonWallakeep ButtonWallakeep__Green'>
+              </FormControl>
+              <div className="AdvertEdit__Footer">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<SaveIcon />}
+                  className="ButtonWallakeep ButtonWallakeep__Green"
+                >
                   Guardar
                 </Button>
-                <Button type='button' variant='contained' color='secondary' startIcon={<CancelIcon />} onClick={this.handleReset} component={Link} to='/'>
+                <Button
+                  type="button"
+                  variant="contained"
+                  color="secondary"
+                  startIcon={<CancelIcon />}
+                  onClick={this.handleReset}
+                  component={Link}
+                  to="/"
+                >
                   Cancel
                 </Button>
-              </div>            
+              </div>
             </form>
           </main>
-          <Dialog open={this.state.openModal} className='AdvertEdit__Modal'>
-            <DialogTitle className='Modal_Title'>
-              URL de la imagen
-            </DialogTitle>
-            <DialogContent className='Modal__Content'>
+          <Dialog open={this.state.openModal} className="AdvertEdit__Modal">
+            <DialogTitle className="Modal_Title">URL de la imagen</DialogTitle>
+            <DialogContent className="Modal__Content">
               <DialogContentText>
-                La API de nodepop no admite carga de imagenes locales por el momento. Por favor, indique la URL a la imagen que desea añadir al anuncio
+                La API de nodepop no admite carga de imagenes locales por el
+                momento. Por favor, indique la URL a la imagen que desea añadir
+                al anuncio
               </DialogContentText>
               <TextField
                 autoFocus
-                name='photoTemp'
+                name="photoTemp"
                 value={this.state.photoTemp}
-                onChange={(ev)=>{this.setState({photoTemp: ev.target.value})}}
-                margin='dense'
-                label='URL Imagen'
-                type='text'
+                onChange={ev => {
+                  this.setState({ photoTemp: ev.target.value });
+                }}
+                margin="dense"
+                label="URL Imagen"
+                type="text"
                 fullWidth
               />
             </DialogContent>
-            <DialogActions className='Modal__Actions'>
-              <Button onClick={this.handleChangePhoto} variant='contained' startIcon={<CheckIcon />} className='ButtonWallakeep ButtonWallakeep__Green'>
+            <DialogActions className="Modal__Actions">
+              <Button
+                onClick={this.handleChangePhoto}
+                variant="contained"
+                startIcon={<CheckIcon />}
+                className="ButtonWallakeep ButtonWallakeep__Green"
+              >
                 Aceptar
               </Button>
-              <Button onClick={this.handleSwitchOpen} variant='contained' startIcon={<CancelIcon />} color='secondary'>
+              <Button
+                onClick={this.handleSwitchOpen}
+                variant="contained"
+                startIcon={<CancelIcon />}
+                color="secondary"
+              >
                 Cancelar
               </Button>
             </DialogActions>
           </Dialog>
         </Container>
-        <Footer/>
+        <Footer />
       </React.Fragment>
     );
   }
@@ -232,11 +294,11 @@ class AdvertEdit extends Component {
    */
   handleChange = field => event => {
     const aux = this.state.advert;
-    aux[field] = event.target.value
+    aux[field] = event.target.value;
     this.setState({
-      advert: aux
+      advert: aux,
     });
-  }
+  };
 
   /**
    * Cambio en un input tipo number
@@ -246,10 +308,10 @@ class AdvertEdit extends Component {
     aux[field] = parseFloat(event.target.value);
     if (aux[field]) {
       this.setState({
-        advert: aux
-      }); 
+        advert: aux,
+      });
     }
-  }
+  };
 
   /**
    * Selectores de tipo multiple choice
@@ -259,13 +321,13 @@ class AdvertEdit extends Component {
     const aux = this.state.advert;
     aux.tags = event.target.value;
     // Actualizo el estado
-    this.setState({advert: aux})
+    this.setState({ advert: aux });
   };
 
   /**
    * Manejador del submit del formulario
    */
-  handleSubmit = (ev) => {
+  handleSubmit = ev => {
     ev.preventDefault();
     const { postAdvert, editAdvert } = NodepopAPI(this.context.session.apiUrl);
     // Creo un anuncio con los datos del estado si es válido
@@ -274,28 +336,40 @@ class AdvertEdit extends Component {
       if (this.props.mode === 'create') {
         // POST
         postAdvert(advert)
-        .then(res => {
-          this.props.enqueueSnackbar('OK. Anuncio creado con exito.', { variant: 'success' })
-          this.props.history.push('/');
-        })
-        .catch(error => {
-          this.props.enqueueSnackbar('Error creando anuncio.', { variant: 'error' })
-        });
+          .then(res => {
+            this.props.enqueueSnackbar('OK. Anuncio creado con exito.', {
+              variant: 'success',
+            });
+            this.props.history.push('/');
+          })
+          .catch(error => {
+            this.props.enqueueSnackbar('Error creando anuncio.', {
+              variant: 'error',
+            });
+          });
       } else {
         // PUT
 
         editAdvert(advert)
-        .then(res => {
-          this.props.enqueueSnackbar('OK. Anuncio editado con exito.', { variant: 'success' })
-          this.props.history.push('/');
-        })
-        .catch(error => this.props.enqueueSnackbar('Error editando anuncio.', { variant: 'error' }));
+          .then(res => {
+            this.props.enqueueSnackbar('OK. Anuncio editado con exito.', {
+              variant: 'success',
+            });
+            this.props.history.push('/');
+          })
+          .catch(error =>
+            this.props.enqueueSnackbar('Error editando anuncio.', {
+              variant: 'error',
+            }),
+          );
       }
     } else {
       // El anuncio no es completo. Error
-      this.props.enqueueSnackbar('Los datos del anuncio no están completos', { variant: 'error' });
+      this.props.enqueueSnackbar('Los datos del anuncio no están completos', {
+        variant: 'error',
+      });
     }
-  }
+  };
 
   /**
    * Handle open modal
@@ -303,9 +377,9 @@ class AdvertEdit extends Component {
   handleSwitchOpen = () => {
     this.setState({
       photoTemp: this.state.advert.photo,
-      openModal: !this.state.openModal
+      openModal: !this.state.openModal,
     });
-  }
+  };
 
   /**
    * Hanle close modal
@@ -317,25 +391,32 @@ class AdvertEdit extends Component {
       aux.photo = this.state.photoTemp;
       this.setState({
         advert: aux,
-        openModal: false
-      }); 
+        openModal: false,
+      });
     } else {
-      this.props.enqueueSnackbar('Debe indicar una URL a una imagen primero', { variant: 'error' });
+      this.props.enqueueSnackbar('Debe indicar una URL a una imagen primero', {
+        variant: 'error',
+      });
     }
-  }
+  };
 
   renderValue = () => {
     if (this.state.advert.tags) {
       return (
-        <div> 
-        { this.state.advert.tags.map(value => 
-          <Chip key={value} size='small' label={value} className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}/> 
-        )}
+        <div>
+          {this.state.advert.tags.map(value => (
+            <Chip
+              key={value}
+              size="small"
+              label={value}
+              className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
+            />
+          ))}
         </div>
-      );        
+      );
     }
     return <div></div>;
-  }
+  };
 }
 
 export default withSnackbar(AdvertEdit);
