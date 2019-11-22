@@ -9,7 +9,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 /* Own modules */
-import UserConsumer from '../../context/UserContext';
+import { withUserContext } from '../../context/UserContext';
 import NodepopAPI from '../../services/NodepopAPI';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
@@ -21,12 +21,7 @@ import './AdvertDetail.css';
 /**
  * Main App
  */
-export default class AdvertDetail extends Component {
-  /**
-   * Utilizar el contexto en cualquier metodo del ciclo de vida del component
-   */
-  static contextType = UserConsumer;
-
+class AdvertDetail extends Component {
   /**
    * Constructor
    */
@@ -43,11 +38,13 @@ export default class AdvertDetail extends Component {
    */
   componentDidMount() {
     // Chequeo sesion del contexto, si no existe redirijo a register
-    const session = this.context.session;
+    const {
+      session,
+      match: { params },
+    } = this.props;
     // Call API to get advert detail
-    const id = this.props.match.params.id;
     const { getAdvert } = NodepopAPI(session.apiUrl);
-    getAdvert(id).then(res => {
+    getAdvert(params.id).then(res => {
       this.setState({
         advert: res,
         loading: false,
@@ -59,6 +56,7 @@ export default class AdvertDetail extends Component {
    * Render
    */
   render() {
+    const { loading, advert } = this.state;
     return (
       <React.Fragment>
         <header>
@@ -69,30 +67,26 @@ export default class AdvertDetail extends Component {
             <div className="Section__Title">
               <h2>Detalle del anuncio</h2>
             </div>
-            {!this.state.loading && (
+            {!loading && (
               <article className="AdvertDetail">
                 <div className="AdvertDetail__Main">
                   <header className="AdvertDetail__Header">
                     <Link to="/" className="AdvertDetail__Back">
                       <KeyboardBackspaceIcon />
                     </Link>
-                    <h1>{this.state.advert.name}</h1>
-                    <img
-                      className="Caption"
-                      src={this.state.advert.photo}
-                      alt="caption"
-                    />
+                    <h1>{advert.name}</h1>
+                    <img className="Caption" src={advert.photo} alt="caption" />
                   </header>
                   <div className="AdvertDetail__Content">
                     <h3 className="AdvertDetail__Type">
-                      {this.state.advert.type === 'buy' ? 'Compro' : 'Vendo'}
+                      {advert.type === 'buy' ? 'Compro' : 'Vendo'}
                     </h3>
                     <div className="AdvertDetail__Description">
-                      <p>{this.state.advert.description}</p>
+                      <p>{advert.description}</p>
                     </div>
                     <div className="AdvertDetail__Tags">
-                      {this.state.advert.tags &&
-                        this.state.advert.tags.map((value, i) => {
+                      {advert.tags &&
+                        advert.tags.map((value, i) => {
                           return (
                             <Chip
                               key={i}
@@ -104,7 +98,7 @@ export default class AdvertDetail extends Component {
                         })}
                     </div>
                     <div className="AdvertDetail__Actions">
-                      <Link to={`/advert/${this.state.advert._id}/edit/`}>
+                      <Link to={`/advert/${advert._id}/edit/`}>
                         <Button
                           type="button"
                           variant="contained"
@@ -123,16 +117,16 @@ export default class AdvertDetail extends Component {
                   <div className="AdvertDetail__Price">
                     <p className="Text">Precio</p>
                     <p className="Price">
-                      {this.state.advert.price} <span>€</span>
+                      {advert.price} <span>€</span>
                     </p>
                   </div>
                   <Moment className="AdvertDetail__Date" fromNow>
-                    {this.state.advert.createdAt}
+                    {advert.createdAt}
                   </Moment>
                 </div>
               </article>
             )}
-            {this.state.loading && (
+            {loading && (
               <div className="Home__Loading">
                 <img
                   src={imageSpinner}
@@ -149,3 +143,5 @@ export default class AdvertDetail extends Component {
     );
   }
 }
+
+export default withUserContext(AdvertDetail);

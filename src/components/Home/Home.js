@@ -7,7 +7,7 @@ import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 /* Own modules */
 import SearchPanel from '../SearchPanel/SearchPanel';
-import UserConsumer from '../../context/UserContext';
+import { withUserContext } from '../../context/UserContext';
 import NodepopAPI from '../../services/NodepopAPI';
 import AdvertCard from '../AdvertCard/AdvertCard';
 import Paginator from '../Paginator/Paginator';
@@ -23,11 +23,6 @@ import './Home.css';
  * Main App
  */
 class Home extends Component {
-  /**
-   * Utilizar el contexto en cualquier metodo del ciclo de vida del component
-   */
-  static contextType = UserConsumer;
-
   /**
    * Constructor
    */
@@ -47,10 +42,10 @@ class Home extends Component {
   render() {
     // Variables para el paginado
     const { numPages, currentPage } = this.state;
-    const minAdvert = this.state.currentPage * this.context.session.maxAdverts;
+    const { session } = this.props;
+    const minAdvert = this.state.currentPage * session.maxAdverts;
     const maxAdvert =
-      this.state.currentPage * this.context.session.maxAdverts +
-      this.context.session.maxAdverts;
+      this.state.currentPage * session.maxAdverts + session.maxAdverts;
     // Render
     return (
       <React.Fragment>
@@ -137,29 +132,23 @@ class Home extends Component {
    * Component did mount
    */
   componentDidMount() {
-    const session = this.context.session;
+    const { session } = this.props;
     // Obtengo los tags y los paso al estado para que re-renderice el panel de busquedas
     const { getTags } = NodepopAPI(session.apiUrl);
     getTags().then(res => this.setState({ tags: res }));
     // Obtengo los anuncios
-    if (session.tag) {
-      this.setState({ tag: session.tag });
-      this.handleSearch({ tag: session.tag });
-    } else {
-      this.getAdverts();
-    }
+    this.getAdverts();
   }
 
   /**
    * Try to connect to the backend API
    */
   getAdverts = () => {
-    const { getAdverts } = NodepopAPI(this.context.session.apiUrl);
+    const { session, enqueueSnackbar } = this.props;
+    const { getAdverts } = NodepopAPI(session.apiUrl);
     getAdverts()
       .then(res => {
-        const numPages = Math.ceil(
-          res.length / this.context.session.maxAdverts,
-        );
+        const numPages = Math.ceil(res.length / session.maxAdverts);
         this.setState({
           error: false,
           loading: false,
@@ -169,7 +158,7 @@ class Home extends Component {
         });
       })
       .catch(() => {
-        this.props.enqueueSnackbar('Error conectando con la API', {
+        enqueueSnackbar('Error conectando con la API', {
           variant: 'error',
         });
         this.setState({
@@ -183,13 +172,12 @@ class Home extends Component {
    * Gestiona el evento de búsqueda de anuncios
    */
   handleSearch = filters => {
+    const { session, enqueueSnackbar } = this.props;
     // Llamo a la API con los filtros recibido
-    const { searchAdvert } = NodepopAPI(this.context.session.apiUrl);
+    const { searchAdvert } = NodepopAPI(session.apiUrl);
     searchAdvert(filters)
       .then(res => {
-        const numPages = Math.ceil(
-          res.length / this.context.session.maxAdverts,
-        );
+        const numPages = Math.ceil(res.length / session.maxAdverts);
         this.setState({
           error: false,
           loading: false,
@@ -199,7 +187,7 @@ class Home extends Component {
         });
       })
       .catch(() => {
-        this.props.enqueueSnackbar('Error conectando con la API', {
+        enqueueSnackbar('Error conectando con la API', {
           variant: 'error',
         });
         this.setState({
@@ -219,10 +207,10 @@ class Home extends Component {
     // Actualizo el state sólo si sigue dentro de los limites (realmente este chequeo también lo hace el componete paginator)
     if (currentPage >= 0 && currentPage < numPages) {
       this.setState({
-        currentPage: currentPage,
+        currentPage,
       });
     }
   };
 }
 
-export default withSnackbar(Home);
+export default withUserContext(withSnackbar(Home));

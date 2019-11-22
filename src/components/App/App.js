@@ -27,24 +27,36 @@ export default class App extends Component {
    */
   constructor(props) {
     super(props);
-    // Intento recuperar la sesión del storage
-    let user = LocalStorage.readLocalStorage();
-    if (!user) {
-      // Si no hay nada en el local storage, creo un objeto sesión vacio correcto
-      user = new Session();
-    }
     this.state = {
-      session: user,
+      // Intento recuperar la sesión del storage
+      session: LocalStorage.readLocalStorage() || new Session(),
     };
   }
+
+  setSession = (session, isRemember, cb) => {
+    if (isRemember) {
+      LocalStorage.saveLocalStorage(session);
+    }
+    this.setState({ session }, cb);
+  };
+
+  clearSession = cb => {
+    LocalStorage.clearLocalStorage();
+    this.setState({ session: new Session() }, cb);
+  };
 
   /**
    * Render
    */
   render() {
+    const userContextValue = {
+      ...this.state,
+      setSession: this.setSession,
+      clearSession: this.clearSession,
+    };
     return (
       <ErrorBoundary>
-        <UserProvider value={this.state}>
+        <UserProvider value={userContextValue}>
           <Router>
             <Switch>
               <Route path="/register" exact component={Register} />
@@ -52,12 +64,12 @@ export default class App extends Component {
               <PrivateRoute
                 path="/advert/create"
                 exact
-                render={props => <AdvertEdit {...props} mode="new" />}
+                component={AdvertEdit}
               />
               <PrivateRoute
                 path="/advert/:id/edit"
                 exact
-                render={props => <AdvertEdit {...props} mode="edit" />}
+                component={AdvertEdit}
               />
               <PrivateRoute path="/advert/:id" exact component={AdvertDetail} />
               <PrivateRoute path="/" exact component={Home} />
