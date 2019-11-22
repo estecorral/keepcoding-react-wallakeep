@@ -50,20 +50,16 @@ export default class App extends Component {
               <Route path="/register" exact component={Register} />
               <PrivateRoute path="/profile" exact component={Profile} />
               <PrivateRoute
-                path="/advert/display/:id"
-                exact
-                component={AdvertDetail}
-              />
-              <PrivateRoute
                 path="/advert/create"
                 exact
-                render={props => <AdvertEdit {...props} mode="create" />}
+                render={props => <AdvertEdit {...props} mode="new" />}
               />
               <PrivateRoute
-                path="/advert/edit/:id"
+                path="/advert/:id/edit"
                 exact
                 render={props => <AdvertEdit {...props} mode="edit" />}
               />
+              <PrivateRoute path="/advert/:id" exact component={AdvertDetail} />
               <PrivateRoute path="/" exact component={Home} />
               <PrivateRoute component={Error404} />
             </Switch>

@@ -104,7 +104,7 @@ export default class AdvertDetail extends Component {
                         })}
                     </div>
                     <div className="AdvertDetail__Actions">
-                      <Link to={`/advert/edit/${this.state.advert._id}`}>
+                      <Link to={`/advert/${this.state.advert._id}/edit/`}>
                         <Button
                           type="button"
                           variant="contained"
