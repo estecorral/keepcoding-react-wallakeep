@@ -59,7 +59,6 @@ class Home extends Component {
             <SearchPanel
               handleSearch={this.handleSearch}
               tags={this.state.tags}
-              tag={this.state.tag}
             />
             <Paginator
               numPages={numPages}

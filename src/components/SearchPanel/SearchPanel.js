@@ -27,7 +27,7 @@ export default class SearchPanel extends Component {
     this.state = {
       name: '',
       type: 'all',
-      tag: props.tag,
+      tag: 'all',
       priceFrom: 0,
       priceTo: 0,
     };
