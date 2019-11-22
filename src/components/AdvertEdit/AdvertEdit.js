@@ -26,6 +26,7 @@ import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
 import NodepopAPI from '../../services/NodepopAPI';
 import { withUserContext } from '../../context/UserContext';
+import { compose } from '../../utils/Compose';
 /* Assets */
 import imagePhoto from '../../assets/images/photo.png';
 /* CSS */
@@ -450,4 +451,4 @@ class AdvertEdit extends Component {
   };
 }
 
-export default withUserContext(withSnackbar(AdvertEdit));
+export default compose(withUserContext, withSnackbar)(AdvertEdit);

@@ -15,6 +15,7 @@ import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
 import { withUserContext } from '../../context/UserContext';
 import Session from '../../models/Session';
+import { compose } from '../../utils/Compose';
 /* Assets */
 import imagePhoto from '../../assets/images/user.png';
 /* CSS */
@@ -182,4 +183,4 @@ class Profile extends Component {
   };
 }
 
-export default withUserContext(withSnackbar(Profile));
+export default compose(withUserContext, withSnackbar)(Profile);

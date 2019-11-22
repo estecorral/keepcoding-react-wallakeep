@@ -13,6 +13,7 @@ import Input from '@material-ui/core/Input';
 import { withUserContext } from '../../context/UserContext';
 import NodepopAPI from '../../services/NodepopAPI';
 import Session from '../../models/Session';
+import { compose } from '../../utils/Compose';
 /* Assets */
 import imageLogo from '../../assets/images/logo2.png';
 /* CSS */
@@ -183,4 +184,4 @@ class Register extends Component {
   };
 }
 
-export default withUserContext(withSnackbar(Register));
+export default compose(withUserContext, withSnackbar)(Register);

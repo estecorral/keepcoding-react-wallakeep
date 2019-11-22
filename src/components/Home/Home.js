@@ -13,6 +13,7 @@ import AdvertCard from '../AdvertCard/AdvertCard';
 import Paginator from '../Paginator/Paginator';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
+import { compose } from '../../utils/Compose';
 /* Assets */
 import imageError from '../../assets/images/error.png';
 import imageSpinner from '../../assets/images/spinner.gif';
@@ -213,4 +214,4 @@ class Home extends Component {
   };
 }
 
-export default withUserContext(withSnackbar(Home));
+export default compose(withUserContext, withSnackbar)(Home);
