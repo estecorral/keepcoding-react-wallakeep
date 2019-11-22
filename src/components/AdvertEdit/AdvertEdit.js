@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 /* Material UI */
-import Container from '@material-ui/core/Container';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -22,8 +21,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import CheckIcon from '@material-ui/icons/Check';
 import CancelIcon from '@material-ui/icons/Cancel';
 /* Own modules */
-import NavBar from '../NavBar/NavBar';
-import Footer from '../Footer/Footer';
+import Layout from '../Layout/Layout';
 import NodepopAPI from '../../services/NodepopAPI';
 import { withUserContext } from '../../context/UserContext';
 import { compose } from '../../utils/Compose';
@@ -95,195 +93,184 @@ class AdvertEdit extends Component {
     const { advert, tags, openModal, photoTemp } = this.state;
     const editMode = this.isEditMode();
     return (
-      <React.Fragment>
-        <header>
-          <NavBar />
-        </header>
-        <Container>
-          <main className="Main__Section">
-            <div className="Section__Title">
-              <h2>{editMode ? 'Editar anuncio' : 'Crear nuevo anuncio'}</h2>
-            </div>
-            <form
-              onSubmit={this.handleSubmit}
-              noValidate
-              autoComplete="off"
-              className="AdvertEdit__Form"
+      <Layout
+        sectionTitle={editMode ? 'Editar anuncio' : 'Crear nuevo anuncio'}
+      >
+        <form
+          onSubmit={this.handleSubmit}
+          noValidate
+          autoComplete="off"
+          className="AdvertEdit__Form"
+        >
+          <button
+            type="button"
+            className="AdvertEdit_Picture"
+            onClick={this.handleSwitchOpen}
+          >
+            <img src={advert.photo || imagePhoto} alt="dummy_photo" />
+          </button>
+          <FormControl fullWidth className="AdvertEdit__FormControl">
+            <InputLabel shrink htmlFor="type">
+              Nombre
+            </InputLabel>
+            <Input
+              name="name"
+              value={advert.name}
+              onChange={this.handleChange}
+              type="text"
+              required
+            />
+          </FormControl>
+          <FormControl fullWidth className="AdvertEdit__FormControl">
+            <InputLabel shrink htmlFor="type">
+              Tipo
+            </InputLabel>
+            <Select
+              name="type"
+              onChange={this.handleChange}
+              className="SearchPanel__Type"
+              value={advert.type}
+              displayEmpty
             >
-              <button
-                type="button"
-                className="AdvertEdit_Picture"
-                onClick={this.handleSwitchOpen}
-              >
-                <img src={advert.photo || imagePhoto} alt="dummy_photo" />
-              </button>
-              <FormControl fullWidth className="AdvertEdit__FormControl">
-                <InputLabel shrink htmlFor="type">
-                  Nombre
-                </InputLabel>
-                <Input
-                  name="name"
-                  value={advert.name}
-                  onChange={this.handleChange}
-                  type="text"
-                  required
+              <MenuItem key="buy" value="buy">
+                <Chip
+                  size="small"
+                  label="buy"
+                  className="Ad__Tag Ad__Tag--small Ad__Tag--buy"
                 />
-              </FormControl>
-              <FormControl fullWidth className="AdvertEdit__FormControl">
-                <InputLabel shrink htmlFor="type">
-                  Tipo
-                </InputLabel>
-                <Select
-                  name="type"
-                  onChange={this.handleChange}
-                  className="SearchPanel__Type"
-                  value={advert.type}
-                  displayEmpty
-                >
-                  <MenuItem key="buy" value="buy">
+              </MenuItem>
+              <MenuItem key="sell" value="sell">
+                <Chip
+                  size="small"
+                  label="sell"
+                  className="Ad__Tag Ad__Tag--small Ad__Tag--sell"
+                />
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth className="AdvertEdit__FormControl">
+            <InputLabel shrink htmlFor="tags">
+              Tags
+            </InputLabel>
+            <Select
+              multiple
+              name="tags"
+              value={advert.tags || ''}
+              onChange={this.handleChangeMultiple}
+              renderValue={() => (
+                <div>
+                  {advert.tags.map(value => (
                     <Chip
+                      key={value}
                       size="small"
-                      label="buy"
-                      className="Ad__Tag Ad__Tag--small Ad__Tag--buy"
+                      label={value}
+                      className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
                     />
-                  </MenuItem>
-                  <MenuItem key="sell" value="sell">
-                    <Chip
-                      size="small"
-                      label="sell"
-                      className="Ad__Tag Ad__Tag--small Ad__Tag--sell"
-                    />
-                  </MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl fullWidth className="AdvertEdit__FormControl">
-                <InputLabel shrink htmlFor="tags">
-                  Tags
-                </InputLabel>
-                <Select
-                  multiple
-                  name="tags"
-                  value={advert.tags || ''}
-                  onChange={this.handleChangeMultiple}
-                  renderValue={() => (
-                    <div>
-                      {advert.tags.map(value => (
-                        <Chip
-                          key={value}
-                          size="small"
-                          label={value}
-                          className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                >
-                  {tags &&
-                    tags.map((value, key) => {
-                      return (
-                        <MenuItem key={key} value={value}>
-                          <Chip
-                            key={key}
-                            size="small"
-                            label={value}
-                            className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
-                          />
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth className="AdvertEdit__FormControl">
-                <InputLabel htmlFor="price">Price</InputLabel>
-                <Input
-                  name="price"
-                  type="number"
-                  value={advert.price}
-                  onChange={this.handleChangeNumber}
-                  endAdornment={
-                    <InputAdornment position="start">€</InputAdornment>
-                  }
-                />
-              </FormControl>
-              <FormControl fullWidth className="AdvertEdit__FormControl">
-                <TextField
-                  name="description"
-                  label="Descripción"
-                  value={advert.description}
-                  onChange={this.handleChange}
-                  multiline
-                  rows={2}
-                  helperText="Introduce una descripción para el anuncio"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </FormControl>
-              <div className="AdvertEdit__Footer">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={<SaveIcon />}
-                  className="ButtonWallakeep ButtonWallakeep__Green"
-                >
-                  Guardar
-                </Button>
-                <Button
-                  type="button"
-                  variant="contained"
-                  color="secondary"
-                  startIcon={<CancelIcon />}
-                  component={Link}
-                  to={params && params.id ? `/advert/${params.id}` : '/'}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </main>
-          <Dialog open={openModal} className="AdvertEdit__Modal">
-            <DialogTitle className="Modal_Title">URL de la imagen</DialogTitle>
-            <DialogContent className="Modal__Content">
-              <DialogContentText>
-                La API de nodepop no admite carga de imagenes locales por el
-                momento. Por favor, indique la URL a la imagen que desea añadir
-                al anuncio
-              </DialogContentText>
-              <TextField
-                autoFocus
-                name="photoTemp"
-                value={photoTemp}
-                onChange={ev => {
-                  this.setState({ photoTemp: ev.target.value });
-                }}
-                margin="dense"
-                label="URL Imagen"
-                type="text"
-                fullWidth
-              />
-            </DialogContent>
-            <DialogActions className="Modal__Actions">
-              <Button
-                onClick={this.handleChangePhoto}
-                variant="contained"
-                startIcon={<CheckIcon />}
-                className="ButtonWallakeep ButtonWallakeep__Green"
-              >
-                Aceptar
-              </Button>
-              <Button
-                onClick={this.handleSwitchOpen}
-                variant="contained"
-                startIcon={<CancelIcon />}
-                color="secondary"
-              >
-                Cancelar
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Container>
-        <Footer />
-      </React.Fragment>
+                  ))}
+                </div>
+              )}
+            >
+              {tags &&
+                tags.map((value, key) => {
+                  return (
+                    <MenuItem key={key} value={value}>
+                      <Chip
+                        key={key}
+                        size="small"
+                        label={value}
+                        className={`Ad__Tag Ad__Tag--small Ad__Tag--${value}`}
+                      />
+                    </MenuItem>
+                  );
+                })}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth className="AdvertEdit__FormControl">
+            <InputLabel htmlFor="price">Price</InputLabel>
+            <Input
+              name="price"
+              type="number"
+              value={advert.price}
+              onChange={this.handleChangeNumber}
+              endAdornment={<InputAdornment position="start">€</InputAdornment>}
+            />
+          </FormControl>
+          <FormControl fullWidth className="AdvertEdit__FormControl">
+            <TextField
+              name="description"
+              label="Descripción"
+              value={advert.description}
+              onChange={this.handleChange}
+              multiline
+              rows={2}
+              helperText="Introduce una descripción para el anuncio"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </FormControl>
+          <div className="AdvertEdit__Footer">
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              className="ButtonWallakeep ButtonWallakeep__Green"
+            >
+              Guardar
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              color="secondary"
+              startIcon={<CancelIcon />}
+              component={Link}
+              to={params && params.id ? `/advert/${params.id}` : '/'}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+        <Dialog open={openModal} className="AdvertEdit__Modal">
+          <DialogTitle className="Modal_Title">URL de la imagen</DialogTitle>
+          <DialogContent className="Modal__Content">
+            <DialogContentText>
+              La API de nodepop no admite carga de imagenes locales por el
+              momento. Por favor, indique la URL a la imagen que desea añadir al
+              anuncio
+            </DialogContentText>
+            <TextField
+              autoFocus
+              name="photoTemp"
+              value={photoTemp}
+              onChange={ev => {
+                this.setState({ photoTemp: ev.target.value });
+              }}
+              margin="dense"
+              label="URL Imagen"
+              type="text"
+              fullWidth
+            />
+          </DialogContent>
+          <DialogActions className="Modal__Actions">
+            <Button
+              onClick={this.handleChangePhoto}
+              variant="contained"
+              startIcon={<CheckIcon />}
+              className="ButtonWallakeep ButtonWallakeep__Green"
+            >
+              Aceptar
+            </Button>
+            <Button
+              onClick={this.handleSwitchOpen}
+              variant="contained"
+              startIcon={<CancelIcon />}
+              color="secondary"
+            >
+              Cancelar
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Layout>
     );
   }
 

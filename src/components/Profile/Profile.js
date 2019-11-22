@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 /* Material UI */
-import Container from '@material-ui/core/Container';
+import Layout from '../Layout/Layout';
 import FormControl from '@material-ui/core/FormControl';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
@@ -11,8 +11,6 @@ import InputLabel from '@material-ui/core/InputLabel';
 import SaveIcon from '@material-ui/icons/Save';
 import DeleteIcon from '@material-ui/icons/Delete';
 /* Own modules */
-import NavBar from '../NavBar/NavBar';
-import Footer from '../Footer/Footer';
 import { withUserContext } from '../../context/UserContext';
 import Session from '../../models/Session';
 import { compose } from '../../utils/Compose';
@@ -44,88 +42,77 @@ class Profile extends Component {
   render() {
     const { name, surname, maxAdverts } = this.state;
     return (
-      <React.Fragment>
-        <header>
-          <NavBar />
-        </header>
-        <Container>
-          <main className="Main__Section">
-            <div className="Section__Title">
-              <h2>Perfil de usuario</h2>
-            </div>
-            <form
-              onSubmit={this.handleSubmit}
-              noValidate
-              autoComplete="off"
-              className="Profile__Form"
+      <Layout sectionTitle="Perfil de usuario">
+        <form
+          onSubmit={this.handleSubmit}
+          noValidate
+          autoComplete="off"
+          className="Profile__Form"
+        >
+          <div className="Profile_Picture">
+            <img src={imagePhoto} alt="user_avatar" />
+          </div>
+          <FormControl fullWidth className="Profile__FormControl">
+            <InputLabel shrink htmlFor="type">
+              Nombre
+            </InputLabel>
+            <Input
+              name="name"
+              value={name}
+              onChange={this.handleChange}
+              type="text"
+              required
+            />
+          </FormControl>
+          <FormControl fullWidth className="Profile__FormControl">
+            <InputLabel shrink htmlFor="type">
+              Apellido
+            </InputLabel>
+            <Input
+              name="surname"
+              value={surname}
+              onChange={this.handleChange}
+              type="text"
+              required
+            />
+          </FormControl>
+          <FormControl fullWidth className="Profile__FormControl">
+            <InputLabel htmlFor="maxAdverts">
+              Anuncios por página (Home)
+            </InputLabel>
+            <Input
+              name="maxAdverts"
+              type="number"
+              value={maxAdverts}
+              onChange={this.handleChange}
+              min={1}
+              max={20}
+            />
+          </FormControl>
+          <div className="Profile__Footer">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              startIcon={<SaveIcon />}
+              className="ButtonWallakeep ButtonWallakeep__Green"
             >
-              <div className="Profile_Picture">
-                <img src={imagePhoto} alt="user_avatar" />
-              </div>
-              <FormControl fullWidth className="Profile__FormControl">
-                <InputLabel shrink htmlFor="type">
-                  Nombre
-                </InputLabel>
-                <Input
-                  name="name"
-                  value={name}
-                  onChange={this.handleChange}
-                  type="text"
-                  required
-                />
-              </FormControl>
-              <FormControl fullWidth className="Profile__FormControl">
-                <InputLabel shrink htmlFor="type">
-                  Apellido
-                </InputLabel>
-                <Input
-                  name="surname"
-                  value={surname}
-                  onChange={this.handleChange}
-                  type="text"
-                  required
-                />
-              </FormControl>
-              <FormControl fullWidth className="Profile__FormControl">
-                <InputLabel htmlFor="maxAdverts">
-                  Anuncios por página (Home)
-                </InputLabel>
-                <Input
-                  name="maxAdverts"
-                  type="number"
-                  value={maxAdverts}
-                  onChange={this.handleChange}
-                  min={1}
-                  max={20}
-                />
-              </FormControl>
-              <div className="Profile__Footer">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SaveIcon />}
-                  className="ButtonWallakeep ButtonWallakeep__Green"
-                >
-                  Guardar
-                </Button>
-                <Button
-                  type="button"
-                  variant="contained"
-                  color="secondary"
-                  onClick={this.handleReset}
-                  startIcon={<DeleteIcon />}
-                  to="/register"
-                  component={Link}
-                >
-                  Borrar
-                </Button>
-              </div>
-            </form>
-          </main>
-        </Container>
-        <Footer />
-      </React.Fragment>
+              Guardar
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              color="secondary"
+              onClick={this.handleReset}
+              startIcon={<DeleteIcon />}
+              to="/register"
+              component={Link}
+            >
+              Borrar
+            </Button>
+          </div>
+        </form>
+      </Layout>
     );
   }
 
