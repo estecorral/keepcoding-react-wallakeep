@@ -1,6 +1,6 @@
 /* NPM modules */
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import Moment from 'react-moment';
 /* Material UI */
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
@@ -27,6 +27,7 @@ class AdvertDetail extends Component {
     super(props);
     this.state = {
       loading: true,
+      error: false,
       advert: null,
     };
   }
@@ -42,19 +43,22 @@ class AdvertDetail extends Component {
     } = this.props;
     // Call API to get advert detail
     const { getAdvert } = NodepopAPI(session.apiUrl);
-    getAdvert(params.id).then(res => {
-      this.setState({
-        advert: res,
-        loading: false,
-      });
-    });
+    getAdvert(params.id)
+      .then(res => {
+        this.setState({
+          loading: false,
+          advert: res,
+        });
+      })
+      .catch(() => this.setState({ error: true, loading: false }));
   }
 
   /**
    * Render
    */
   render() {
-    const { loading, advert } = this.state;
+    const { loading, error, advert } = this.state;
+    if (error) return <Redirect to="/notfound" />;
     return (
       <Layout sectionTitle="Detalle del anuncio">
         {!loading && (

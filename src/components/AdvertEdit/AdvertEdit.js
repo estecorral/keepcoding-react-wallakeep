@@ -1,6 +1,6 @@
 /* NPM modules */
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { withSnackbar } from 'notistack';
 /* Material UI */
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -54,6 +54,8 @@ class AdvertEdit extends Component {
       openModal: false,
       tags: [],
       advert: defaultAdvert,
+      loading: false,
+      error: false,
     };
   }
 
@@ -90,8 +92,9 @@ class AdvertEdit extends Component {
     const {
       match: { params },
     } = this.props;
-    const { advert, tags, openModal, photoTemp } = this.state;
+    const { advert, tags, openModal, photoTemp, error } = this.state;
     const editMode = this.isEditMode();
+    if (error) return <Redirect to="/notfound" />;
     return (
       <Layout
         sectionTitle={editMode ? 'Editar anuncio' : 'Crear nuevo anuncio'}
@@ -296,12 +299,19 @@ class AdvertEdit extends Component {
 
     const { getAdvert } = NodepopAPI(session.apiUrl);
     this.setState({ loading: true }, () => {
-      getAdvert(params.id).then(res => {
-        this.setState({
-          advert: res,
-          loading: false,
-        });
-      });
+      getAdvert(params.id)
+        .then(res => {
+          this.setState({
+            loading: false,
+            advert: res,
+          });
+        })
+        .catch(() =>
+          this.setState({
+            loading: false,
+            error: true,
+          }),
+        );
     });
   };
 
